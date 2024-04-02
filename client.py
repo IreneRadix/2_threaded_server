@@ -1,16 +1,31 @@
 import socket
-from time import sleep
 
-sock = socket.socket()
-sock.setblocking(1)
-sock.connect(('10.38.165.12', 9090))
 
-#msg = input()
-msg = "Hi!"
-sock.send(msg.encode())
+class Client:
+    def __init__(self):
+        self.port = int(input('input port number > '))
+        self.host = input('input host > ')
+        self.sock = None
 
-data = sock.recv(1024)
+    def __get_connection(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((self.host, self.port))
+        return sock
 
-sock.close()
+    def main(self):
+        self.sock = self.__get_connection()
+        while True:
+            mssg = input('input > ')
+            if mssg == 'exit':
+                self.sock.close()
+                print('Connection refused')
+                break
+            self.sock.send(mssg.encode())
 
-print(data.decode())
+            data = self.sock.recv(1024)
+            print(f"Recieved data from server - {data.decode()}")
+
+
+client = Client()
+
+client.main()
